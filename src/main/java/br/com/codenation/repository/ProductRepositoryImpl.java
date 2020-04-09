@@ -2,7 +2,6 @@ package br.com.codenation.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import br.com.codenation.data.ProductsMockedData;
@@ -27,5 +26,5 @@ public class ProductRepositoryImpl implements ProductRepository {
 	public Optional<Product> findById(Long id) {
 		return data.allProducts().stream().filter(product -> product.getId().equals(id)).findAny();
 	}
-	
+
 }

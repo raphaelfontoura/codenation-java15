@@ -1,10 +1,11 @@
 package br.com.codenation.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import br.com.codenation.model.OrderItem;
 import br.com.codenation.model.Product;
@@ -20,7 +21,18 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public Double calculateOrderValue(List<OrderItem> items) {
-		return null;
+		Double value = 0.0;
+		
+		for (OrderItem orderItem : items) {
+			Long id = orderItem.getProductId();
+			Product product = productRepository.findById(id).get();
+			if (product.getIsSale()) {
+				value += product.getValue() * orderItem.getQuantity() * 0.8;
+			} else {
+				value += product.getValue() * orderItem.getQuantity();
+			}
+		}
+		return value;
 	}
 
 	/**
@@ -28,10 +40,11 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public Set<Product> findProductsById(List<Long> ids) {
+		
 		Set<Product> products = new HashSet<Product>();
+		
 		for (Long id : ids) {
-			Optional<Product> product = this.productRepository.findById(id);
-			products.add(product.get());
+			products.add(this.productRepository.findById(id).get());
 		}
 		return products;
 	}
@@ -41,7 +54,11 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public Double calculateMultipleOrders(List<List<OrderItem>> orders) {
-		return null;
+		Double value = 0.0;
+		for (List<OrderItem> list : orders) {
+			value += calculateOrderValue(list);
+		}
+		return value;
 	}
 
 	/**
@@ -49,7 +66,23 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public Map<Boolean, List<Product>> groupProductsBySale(List<Long> productIds) {
-		return null;
+		Set<Product> setProducts = findProductsById(productIds);
+		List<Product> productsIsSale = setProducts.stream()
+				.filter(p -> p.getIsSale().equals(true)).collect(Collectors.toList());
+		List<Product> productsIsNotSale = setProducts.stream()
+				.filter(p -> p.getIsSale().equals(false)).collect(Collectors.toList());
+		Map<Boolean, List<Product>> collectProducts = new HashMap<Boolean, List<Product>>();
+//		setProducts.stream().forEach(product -> {
+//			if (product.getIsSale()) {
+//				productsIsSale.add(product);
+//			} else {
+//				productsIsNotSale.add(product);
+//			}
+//		});
+		collectProducts.put(true, productsIsSale);
+		collectProducts.put(false, productsIsNotSale);
+		
+		return collectProducts;
 	}
 
 }
