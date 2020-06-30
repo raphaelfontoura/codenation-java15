@@ -72,13 +72,7 @@ public class OrderServiceImpl implements OrderService {
 		List<Product> productsIsNotSale = setProducts.stream()
 				.filter(p -> p.getIsSale().equals(false)).collect(Collectors.toList());
 		Map<Boolean, List<Product>> collectProducts = new HashMap<Boolean, List<Product>>();
-//		setProducts.stream().forEach(product -> {
-//			if (product.getIsSale()) {
-//				productsIsSale.add(product);
-//			} else {
-//				productsIsNotSale.add(product);
-//			}
-//		});
+
 		collectProducts.put(true, productsIsSale);
 		collectProducts.put(false, productsIsNotSale);
 		
